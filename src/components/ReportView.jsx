@@ -1,27 +1,35 @@
 import { useMemo, useState } from 'react'
-import { FileJson, FileCode2, Copy, Download, ShieldCheck, Info } from 'lucide-react'
+import { FileJson, FileCode2, Copy, Download, ShieldCheck, Info, Check, Ban } from 'lucide-react'
 import { Badge, Card, CopyButton, Note } from './ui'
 import { buildReportData, buildReportHtml } from '../lib/report'
 import { exportSummaryText } from '../lib/reportText'
-import { downloadText, formatBytes } from '../lib/format'
+import { saveTextFile, formatBytes } from '../lib/format'
 
 export default function ReportView({ a }) {
   const [copied, setCopied] = useState(false)
+  const [saveState, setSaveState] = useState(null)
   const summary = useMemo(() => exportSummaryText(a), [a])
   const json = useMemo(() => JSON.stringify(buildReportData(a), null, 2), [a])
 
+  const save = async (text, filename, mime) => {
+    setSaveState(null)
+    const res = await saveTextFile(text, filename, mime)
+    if (res.cancelled) setSaveState({ type: 'cancel', file: filename })
+    else setSaveState({ type: 'ok', file: res.filename, via: res.via })
+  }
+
   const saveHtml = () => {
     const name = a.name.replace(/\.[^.]+$/, '')
-    downloadText(buildReportHtml(a), `${name}-forensics.html`, 'text/html;charset=utf-8')
+    return save(buildReportHtml(a), `${name}-forensics.html`, 'text/html;charset=utf-8')
   }
   const saveJson = () => {
     const name = a.name.replace(/\.[^.]+$/, '')
-    downloadText(json, `${name}-forensics.json`, 'application/json;charset=utf-8')
+    return save(json, `${name}-forensics.json`, 'application/json;charset=utf-8')
   }
 
   return (
     <>
-      <Card icon={ShieldCheck} title="گزارش نهایی" desc="همه داده‌ها در یک فایل قابل نگه‌داری">
+      <Card icon={ShieldCheck} title="گزارش نهایی" desc="ذخیره روی دستگاه شما — JSON برای پردازش، HTML برای خواندن و چاپ">
         <div className="chip-row" style={{ marginBottom: 12 }}>
           <Badge tone="cyan">{a.name}</Badge>
           <Badge>{formatBytes(a.size)}</Badge>
@@ -61,6 +69,21 @@ export default function ReportView({ a }) {
             <Download size={14} /> پیش‌نمایش و چاپ
           </button>
         </div>
+        {saveState?.type === 'ok' && (
+          <div className="save-state ok">
+            <Check size={13} />
+            <span>
+              گزارش در فایل <span className="mono" dir="ltr">{saveState.file}</span> ذخیره شد
+              {saveState.via === 'download' ? ' (پوشه دانلود دستگاه)' : ''}.
+            </span>
+          </div>
+        )}
+        {saveState?.type === 'cancel' && (
+          <div className="save-state cancel">
+            <Ban size={13} />
+            <span>ذخیره لغو شد؛ فایلی نوشته نشد.</span>
+          </div>
+        )}
       </Card>
 
       <Card icon={FileJson} title="خلاصه متنی" desc="آماده برای ارسال یا بایگانی">

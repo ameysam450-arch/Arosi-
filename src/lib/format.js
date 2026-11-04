@@ -53,6 +53,30 @@ export function downloadText(text, filename, mime = 'text/plain;charset=utf-8') 
   downloadBlob(new Blob([text], { type: mime }), filename)
 }
 
+// Saves text to a file on the user's disk: a native "Save as" dialog where the
+// browser supports it, otherwise a regular download. Returns what happened so
+// the UI can confirm it. A cancelled dialog writes nothing.
+export async function saveTextFile(text, filename, mime = 'text/plain;charset=utf-8') {
+  const picker = typeof window !== 'undefined' ? window.showSaveFilePicker : null
+  if (picker) {
+    try {
+      const ext = filename.slice(filename.lastIndexOf('.'))
+      const handle = await picker({
+        suggestedName: filename,
+        types: [{ description: ext === '.json' ? 'JSON' : 'HTML', accept: { [mime.split(';')[0]]: [ext] } }],
+      })
+      const writable = await handle.createWritable()
+      await writable.write(new Blob([text], { type: mime }))
+      await writable.close()
+      return { saved: true, cancelled: false, filename: handle.name, via: 'picker' }
+    } catch (err) {
+      if (err?.name === 'AbortError') return { saved: false, cancelled: true, filename }
+    }
+  }
+  downloadText(text, filename, mime)
+  return { saved: true, cancelled: false, filename, via: 'download' }
+}
+
 export async function copyText(text) {
   try {
     await navigator.clipboard.writeText(text)
