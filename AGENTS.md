@@ -26,6 +26,18 @@ docker compose -f docker-compose.base44.yml up -d --build
 - `vite.config.js` appends `.${BASE44_SANDBOX_HOST_DOMAIN}` to `server.allowedHosts`
   **only** when `BASE44_PREVIEW_MODE === '1'` (sandbox host rotation). Unset → untouched.
 
+## Phone install (PWA)
+
+- `public/manifest.webmanifest` + `public/icons/*` make the built app installable
+  ("Add to Home Screen"); iOS uses `apple-touch-icon` and the apple meta tags in
+  `index.html`.
+- `public/sw.js` caches the app shell and same-origin assets, so an installed copy
+  works fully offline (the app has no backend). It is registered **only** in a
+  production build (`import.meta.env.PROD` in `src/main.jsx`) — never register it in
+  dev, it would serve stale modules and break HMR.
+- `vite.config.js` uses `base: './'` so a build works from any static host, including
+  a sub-path like GitHub Pages `/<repo>/`. Keep asset/manifest/SW references relative.
+
 ## Layout
 
 | File | Role |

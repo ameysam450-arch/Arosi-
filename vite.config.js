@@ -9,6 +9,9 @@ if (process.env.BASE44_PREVIEW_MODE === '1' && process.env.BASE44_SANDBOX_HOST_D
 }
 
 export default defineConfig({
+  // Relative asset URLs so the built app works from any static host, including
+  // a sub-path such as GitHub Pages (/<repo>/) — installable as a phone app.
+  base: './',
   plugins: [react()],
   server: {
     host: '0.0.0.0',
