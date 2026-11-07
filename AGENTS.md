@@ -28,7 +28,7 @@ docker compose -f docker-compose.base44.yml up -d --build
 
 ## Phone install (PWA)
 
-- `public/manifest.webmanifest` + `public/icons/*` make the built app installable
+- `public/manifest.json` + `public/icons/*` make the built app installable
   ("Add to Home Screen"); iOS uses `apple-touch-icon` and the apple meta tags in
   `index.html`.
 - `public/sw.js` caches the app shell and same-origin assets, so an installed copy
