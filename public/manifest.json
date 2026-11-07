@@ -1,0 +1,19 @@
+{
+  "name": "عکس‌کاو — آزمایشگاه داده‌های عکس",
+  "short_name": "عکس‌کاو",
+  "description": "استخراج متادیتا، داده‌های پنهان و نشانه‌های ویرایش از عکس‌ها — همه پردازش روی خود دستگاه.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06090e",
+  "theme_color": "#06090e",
+  "categories": ["photo", "utilities", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
